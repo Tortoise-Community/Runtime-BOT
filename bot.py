@@ -39,6 +39,7 @@ class MyBot(commands.Bot):
 
         # Cogs
         await self.load_extension("cogs.hermes")
+        await self.load_extension("cogs.logger")
         await self.load_extension("cogs.status")
         await self.load_extension("cogs.health")
 

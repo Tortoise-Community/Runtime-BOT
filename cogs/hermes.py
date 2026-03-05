@@ -6,6 +6,7 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 from typing import Dict
 from utils.embed_handler import code_eval_embed, failure, info, success
+from constants import bot_invite_link
 
 EXECUTE_URL = config("EXECUTION_API_URL")
 
@@ -22,7 +23,7 @@ view.add_item(
     discord.ui.Button(
         label="Invite",
         emoji=discord.PartialEmoji(name="invite", id=1479091984286224487),
-        url="https://discord.com/oauth2/authorize?client_id=780132667265122315",
+        url=bot_invite_link,
     )
 )
 view.add_item(
@@ -277,6 +278,18 @@ class SandboxExec(commands.Cog):
         await self.bot.runtime.set_enabled(interaction.guild.id, True)
         await interaction.followup.send(embed=success("Runtime Enabled"))
 
+    @app_commands.command(description="Get invite link for the bot")
+    async def invite(self, interaction: discord.Interaction):
+
+        await interaction.response.send_message(
+            embed=discord.Embed(
+                title="Invite Bot",
+                description="Click the button below to invite the bot to your server.",
+                color=discord.Color.green()
+            ),
+            view=view,
+            ephemeral=False
+        )
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(SandboxExec(bot))

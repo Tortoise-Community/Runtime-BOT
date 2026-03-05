@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from utils.embed_handler import simple_embed
 from utils.manager import RuntimeManager, Database
-from constants import system_log_channel_id, discord_invite
+from constants import system_log_channel_id, discord_invite_link
 
 TOKEN = config("DISCORD_BOT_TOKEN")
 DB_URL = config("DATABASE_URL")
@@ -97,7 +97,7 @@ async def on_message(message: discord.Message):
     if message.guild is None:
         try:
             await message.channel.send(
-                f"Need Support? Join 👉 {discord_invite}"
+                f"Need Support? Join 👉 {discord_invite_link}"
             )
         except discord.Forbidden:
             pass

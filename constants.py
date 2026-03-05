@@ -3,7 +3,8 @@ from discord import Color
 tortoise_guild_id = 577192344529404154
 website_url = "https://www.tortoisecommunity.org/"
 github_repo_link = "https://github.com/Ryuga/Hermes"
-discord_invite = "https://discord.gg/WeUtJ7hqum/"
+discord_invite_link = "https://discord.gg/WeUtJ7hqum"
+bot_invite_link = "https://discord.com/oauth2/authorize?client_id=780132667265122315"
 
 # Log Channel IDs
 system_log_channel_id = 1461947577200148605

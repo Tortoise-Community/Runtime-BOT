@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from utils.embed_handler import simple_embed
 from utils.manager import RuntimeManager, Database
-from constants import system_log_channel_id, discord_invite_link
+from constants import system_log_channel_id, discord_invite_link, tortoise_guild_id
 
 TOKEN = config("DISCORD_BOT_TOKEN")
 DB_URL = config("DATABASE_URL")
@@ -44,6 +44,8 @@ class MyBot(commands.Bot):
         await self.load_extension("cogs.health")
 
         await self.tree.sync()
+        await self.tree.sync(guild=discord.Object(id=tortoise_guild_id))
+
         print("✅ Synced application commands")
 
 

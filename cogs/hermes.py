@@ -160,7 +160,7 @@ class SandboxExec(commands.Cog):
 
         if not lang:
             await message.channel.send(
-                "Unsupported language. Use python, javascript or java in the code block header."
+                embed=failure("Unsupported language: Use `python`, `javascript` or `java`.")
             )
             return
 

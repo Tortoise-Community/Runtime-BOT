@@ -4,7 +4,7 @@ from discord.ext import commands, tasks
 from discord import app_commands
 
 from utils.checks import tortoise_bot_developer_only
-
+from constants import tortoise_guild_id
 
 class StatusCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -45,6 +45,7 @@ class StatusCog(commands.Cog):
     status_group = app_commands.Group(
         name="status",
         description="Manage bot statuses",
+        guild_ids=[tortoise_guild_id]
     )
 
     @status_group.command(name="add", description="Add a rotating status")

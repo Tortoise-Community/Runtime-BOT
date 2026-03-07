@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from utils.embed_handler import info
+from utils.embed_handler import info, runtime_join_embed
 from constants import system_log_channel_id
 
 
@@ -50,6 +50,23 @@ class BotLogger(commands.Cog):
         embed = info(text, None, "Bot Added")
 
         await self._send(embed=embed)
+
+        target_channel = None
+
+        if guild.system_channel and guild.system_channel.permissions_for(guild.me).send_messages:
+            target_channel = guild.system_channel
+        else:
+            for channel in guild.text_channels:
+                perms = channel.permissions_for(guild.me)
+                if perms.send_messages and perms.embed_links:
+                    target_channel = channel
+                    break
+
+        if target_channel:
+            try:
+                await target_channel.send(embed=runtime_join_embed())
+            except discord.HTTPException:
+                pass
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):

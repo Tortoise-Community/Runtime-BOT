@@ -97,3 +97,19 @@ def code_eval_embed(language: str, output: str, *, edited: bool = False, exit_co
         embed.add_field(name="Exit code", value=f"```ex\n{exit_code}```", inline=True)
     return embed
 
+def runtime_join_embed() -> Embed:
+    embed = Embed(
+        title="Thank you for using Runtime",
+        description=(
+            "Use `/run_help` to get started.\n"
+            "Execution is enabled by default, administrators can enable or disable it using bot commands.\n\n"
+            "This bot runs on the [Hermes Engine](https://github.com/Ryuga/Hermes), which is currently in beta, so occasional performance issues may occur.\n\n"
+            "[GitHub](https://github.com/Tortoise-Community/Runtime-BOT)  •  "
+            "[Website](https://runtime-bot.tortoisecommunity.org)  •  "
+            "[Status](https://runtime-bot.tortoisecommunity.org/health)  •  "
+            f"[Support]({constants.discord_invite_link})"
+        ),
+        color=Color.dark_green()
+    )
+    embed.set_footer(text=f"Tortoise Programming Community", icon_url="https://avatars.githubusercontent.com/u/54438042")
+    return embed

@@ -224,11 +224,11 @@ class SandboxExec(commands.Cog):
     async def run_help(self, interaction: discord.Interaction):
         content = (
             "Run code by sending a message that starts with `/run` followed by a fenced code block.\n\n"
-            "**Format:**\n"
-            "/run ```<language>\n"
-            "your code here\n"
-            "```\n"
-            "Language support: **python**, **javascript**, **java** (**py**,**js** also works)\n\n"
+            "### Format:\n\n"
+            "/run\n\\`\\`\\`<language>\n"
+            "print(1 + 1)\n"
+            "\\`\\`\\`\n\n"
+            "Language support: **python**, **javascript**, **java** (**py**,**js** also works)\n"
             "### Examples\n"
             "**Python:**\n\n"
             "/run ```python\n"
@@ -245,7 +245,8 @@ class SandboxExec(commands.Cog):
             "        System.out.println(1 + 1);\n"
             "    }\n"
             "}\n"
-            "```\n\n"
+            "// PS: Java code requires a public class to compile"
+            "```\n"
             "You can edit your message within 2 minutes to re-run the code automatically."
         )
 

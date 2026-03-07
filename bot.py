@@ -15,14 +15,17 @@ DB_URL = config("DATABASE_URL")
 class MyBot(commands.Bot):
 
     def __init__(self):
-        intents = discord.Intents.default()
-        intents.members = True
-        intents.message_content = True
+        intents = discord.Intents.none()
+        intents.guilds = True
         intents.messages = True
+        intents.message_content = True
 
         super().__init__(
             command_prefix="!",
             intents=intents,
+            max_messages=0,
+            member_cache_flags=discord.MemberCacheFlags.none(),
+            chunk_guilds_at_startup=False
         )
 
         self.db = Database(DB_URL)

@@ -2,7 +2,7 @@ import aiohttp
 import discord
 from decouple import config
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 from typing import Dict
 from utils.embed_handler import code_eval_embed, failure, info, success
@@ -44,6 +44,8 @@ class SandboxExec(commands.Cog):
         self.execution_enabled = True
 
     def cog_unload(self):
+        if self.cache_eviction.is_running():
+            self.cache_eviction.cancel()
         self.bot.loop.create_task(self.session.close())
 
 
@@ -142,6 +144,24 @@ class SandboxExec(commands.Cog):
         else:
             return await channel.send(embed=embed, view=view)
 
+
+    @tasks.loop(hours=6)
+    async def cache_eviction(self):
+        now = datetime.utcnow()
+
+        expired = [
+            msg_id
+            for msg_id, meta in self.tracked.items()
+            if now - meta["created"] > timedelta(minutes=2)
+        ]
+
+        for msg_id in expired:
+            self.tracked.pop(msg_id, None)
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not self.cache_eviction.is_running():
+            self.cache_eviction.start()
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):

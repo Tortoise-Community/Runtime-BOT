@@ -111,5 +111,5 @@ def runtime_join_embed() -> Embed:
         ),
         color=Color.dark_green()
     )
-    embed.set_footer(text=f"Tortoise Programming Community", icon_url="https://avatars.githubusercontent.com/u/54438042")
+    embed.set_footer(text=f"Tortoise Programming Community", icon_url=constants.tortoise_community_avatar_link)
     return embed

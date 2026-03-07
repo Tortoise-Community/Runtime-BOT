@@ -5,6 +5,7 @@ website_url = "https://www.tortoisecommunity.org/"
 github_repo_link = "https://github.com/Ryuga/Hermes"
 discord_invite_link = "https://discord.gg/WeUtJ7hqum"
 bot_invite_link = "https://discord.com/oauth2/authorize?client_id=780132667265122315"
+tortoise_community_avatar_link = "https://avatars.githubusercontent.com/u/54438042"
 
 # Log Channel IDs
 system_log_channel_id = 1461947577200148605
@@ -17,7 +18,7 @@ admin_role = 577196762691928065
 
 # Emojis
 success_emoji = "<a:success:1479072071064490069>"
-failure_emoji = "<a:success:1479072071064490069>"
+failure_emoji = "<a:failure:1479072121261920316>"
 
 # Special
 tortoise_developers = (197918569894379520, 612349409736392928)

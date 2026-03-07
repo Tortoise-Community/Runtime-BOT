@@ -227,18 +227,18 @@ class SandboxExec(commands.Cog):
                 result = await self._execute(lang, code)
             except Exception:
                 return
-        try:
-            bot_msg = await after.channel.fetch_message(meta["bot_msg_id"])
-        except Exception:
-            return
+            try:
+                bot_msg = await after.channel.fetch_message(meta["bot_msg_id"])
+            except Exception:
+                return
 
-        await self._send_result(
-            after.channel,
-            result,
-            lang,
-            edited=True,
-            target_message=bot_msg,
-        )
+            await self._send_result(
+                after.channel,
+                result,
+                lang,
+                edited=True,
+                target_message=bot_msg,
+            )
 
     @app_commands.command(name="run_help", description="Show how to run code with the execution bot")
     async def run_help(self, interaction: discord.Interaction):

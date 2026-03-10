@@ -28,7 +28,7 @@ view.add_item(
 )
 view.add_item(
     discord.ui.Button(
-        label="Github",
+        label="Star on Github",
         emoji=discord.PartialEmoji(name="github", id=1479090326709993533),
         url="https://github.com/Ryuga/Hermes",
     )

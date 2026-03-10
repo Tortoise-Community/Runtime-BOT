@@ -70,7 +70,7 @@ async def send_restart_message(client: commands.Bot):
         return
 
     try:
-        embed = simple_embed(message=f"Build version: `{commit_hash}`", title="", color=discord.Color.teal())
+        embed = simple_embed(message=f"Build version: `{commit_hash}`", title="")
         embed.set_footer(text=f"🔄 Bot Restarted")
         await channel.send(
             embed=embed,

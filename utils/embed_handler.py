@@ -24,7 +24,7 @@ def get_top_role_color(member: Union[Member, User], *, fallback_color) -> Color:
 
 
 
-def simple_embed(message: str, title: str, color: Color) -> Embed:
+def simple_embed(message: str, title: str, color: Union[Color, int] = constants.accent_color) -> Embed:
     embed = Embed(title=title, description=message, color=color)
     return embed
 
@@ -38,7 +38,7 @@ def info(message: str, member: Union[Member, User], title: str = "Info") -> Embe
     :param title: title of embed, defaults to "Info"
     :return: Embed object
     """
-    return Embed(title=title, description=message, color=get_top_role_color(member, fallback_color=Color.green()))
+    return Embed(title=title, description=message, color=get_top_role_color(member, fallback_color=constants.accent_color))
 
 
 def success(message: str, member: Union[Member, User] = None) -> Embed:
@@ -52,7 +52,7 @@ def success(message: str, member: Union[Member, User] = None) -> Embed:
     :return: Embed object
     """
     return simple_embed(f"{constants.success_emoji}︱{message}", "",
-                        get_top_role_color(member, fallback_color=Color.green()))
+                        get_top_role_color(member, fallback_color=constants.accent_color))
 
 
 def warning(message: str) -> Embed:
@@ -76,7 +76,7 @@ def failure(message: str) -> Embed:
 def code_eval_embed(language: str, output: str, *, edited: bool = False, exit_code: int = -1, disable_extras=False) -> Embed:
     title = "Execution Result (edited)" if edited else "Execution Result"
     if language == "java":
-        title += "〖beta〗"
+        title += "(β)"
     color = (Color.dark_red() if exit_code != 0 else Color.green() if edited else Color.dark_green())
 
     if not output:
@@ -109,7 +109,7 @@ def runtime_join_embed() -> Embed:
             "[Status](https://runtime-bot.tortoisecommunity.org/health)  •  "
             f"[Support]({constants.discord_invite_link})"
         ),
-        color=Color.dark_green()
+        color=constants.accent_color
     )
     embed.set_footer(text=f"Tortoise Programming Community", icon_url=constants.tortoise_community_avatar_link)
     return embed

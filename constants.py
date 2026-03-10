@@ -32,3 +32,5 @@ embed_space = "\u200b "
 max_message_length = 1000
 
 rate_limit_minutes = 10
+
+accent_color = 0x98DFAF

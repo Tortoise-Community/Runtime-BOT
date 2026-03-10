@@ -33,7 +33,7 @@ class RuntimeManager:
             CREATE TABLE IF NOT EXISTS runtime_config (
                 guild_id BIGINT PRIMARY KEY,
                 enabled  BOOLEAN NOT NULL DEFAULT TRUE,
-                last_promoted TIMESTAMP NULL
+                last_promoted TIMESTAMPTZ NULL
             )
             """
         )
@@ -73,13 +73,14 @@ class RuntimeManager:
     async def set_last_promoted(self, guild_id: int, timestamp):
         await self.db.pool.execute(
             """
-            INSERT INTO runtime_config (guild_id, enabled, last_promoted)
-            VALUES ($1, TRUE, $2)
+            INSERT INTO runtime_config (guild_id, last_promoted)
+            VALUES ($1, $2)
             ON CONFLICT (guild_id)
             DO UPDATE SET last_promoted = EXCLUDED.last_promoted
             """,
             guild_id,
             timestamp
         )
+
         config = self.cache.setdefault(guild_id, RuntimeConfig())
         config.last_promoted = timestamp

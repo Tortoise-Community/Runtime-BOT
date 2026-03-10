@@ -248,6 +248,9 @@ class SandboxExec(commands.Cog):
         if not meta:
             return
 
+        if self.bot.maintenance_mode:
+            return
+
         if datetime.now(timezone.utc) - meta["created"] > timedelta(minutes=2):
             self.tracked.pop(after.id, None)
             return

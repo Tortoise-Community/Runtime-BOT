@@ -3,7 +3,7 @@ import discord
 from decouple import config
 from discord import app_commands
 from discord.ext import commands, tasks
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict
 from utils.embed_handler import code_eval_embed, failure, info, success
 from constants import bot_invite_link
@@ -18,26 +18,32 @@ LANG_ALIASES = {
     "java": "java",
 }
 
-view = discord.ui.View()
-view.add_item(
-    discord.ui.Button(
-        label="Invite",
-        emoji=discord.PartialEmoji(name="invite", id=1479091984286224487),
-        url=bot_invite_link,
+
+def build_view():
+    view = discord.ui.View()
+
+    view.add_item(
+        discord.ui.Button(
+            label="Invite",
+            emoji=discord.PartialEmoji(name="invite", id=1479091984286224487),
+            url=bot_invite_link,
+        )
     )
-)
-view.add_item(
-    discord.ui.Button(
-        label="Star on Github",
-        emoji=discord.PartialEmoji(name="github", id=1479090326709993533),
-        url="https://github.com/Ryuga/Hermes",
+
+    view.add_item(
+        discord.ui.Button(
+            label="Star on Github",
+            emoji=discord.PartialEmoji(name="github", id=1479090326709993533),
+            url="https://github.com/Ryuga/Hermes",
+        )
     )
-)
+
+    return view
 
 
 class SandboxExec(commands.Cog):
 
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: "MyBot"):
         self.bot = bot
         self.session = aiohttp.ClientSession()
         self.tracked: Dict[int, dict] = {}
@@ -125,6 +131,7 @@ class SandboxExec(commands.Cog):
     async def _send_result(
         self,
         channel: discord.TextChannel,
+        guild: discord.Guild,
         result: dict,
         language: str,
         edited: bool = False,
@@ -135,8 +142,31 @@ class SandboxExec(commands.Cog):
         if result.get("rate_limited") or result.get("maintenance") or result.get("unavailable"):
             embed = failure(result.get("std_log"))
         else:
-            embed = code_eval_embed(language, output, edited=edited, exit_code=exit_code, disable_extras=True)
-            embed.set_footer(text=f"Powered by Hermes Engine", icon_url=f"https://lairesit.sirv.com/Tortoise/{language}.png")
+            embed = code_eval_embed(
+                language,
+                output,
+                edited=edited,
+                exit_code=exit_code,
+                disable_extras=True,
+            )
+
+            embed.set_footer(
+                text="Powered by Hermes Engine",
+                icon_url=f"https://lairesit.sirv.com/Tortoise/{language}.png",
+            )
+
+        last_promoted = self.bot.runtime.get_last_promoted(guild.id)
+        now = datetime.now(timezone.utc)
+
+        show_view = True
+
+        if last_promoted and now - last_promoted < timedelta(hours=1):
+            show_view = False
+        else:
+            if not edited:
+                await self.bot.runtime.set_last_promoted(guild.id, now)
+
+        view = build_view() if show_view else None
 
         if target_message:
             await target_message.edit(embed=embed, view=view)
@@ -147,7 +177,8 @@ class SandboxExec(commands.Cog):
 
     @tasks.loop(hours=6)
     async def cache_eviction(self):
-        now = datetime.utcnow()
+
+        now = datetime.now(timezone.utc)
 
         expired = [
             msg_id
@@ -191,10 +222,15 @@ class SandboxExec(commands.Cog):
                 await message.channel.send("Execution request failed.")
                 return
 
-            bot_msg = await self._send_result(message.channel, result, lang)
+            bot_msg = await self._send_result(
+                message.channel,
+                message.guild,
+                result,
+                lang,
+            )
 
             self.tracked[message.id] = {
-                "created": datetime.utcnow(),
+                "created": datetime.now(timezone.utc),
                 "lang": lang,
                 "bot_msg_id": bot_msg.id,
             }
@@ -208,7 +244,7 @@ class SandboxExec(commands.Cog):
         if not meta:
             return
 
-        if datetime.utcnow() - meta["created"] > timedelta(minutes=2):
+        if datetime.now(timezone.utc) - meta["created"] > timedelta(minutes=2):
             self.tracked.pop(after.id, None)
             return
 
@@ -234,6 +270,7 @@ class SandboxExec(commands.Cog):
 
             await self._send_result(
                 after.channel,
+                after.guild,
                 result,
                 lang,
                 edited=True,
@@ -308,7 +345,7 @@ class SandboxExec(commands.Cog):
                 description="Click the button below to invite the bot to your server.",
                 color=discord.Color.green()
             ),
-            view=view,
+            view=build_view(),
             ephemeral=False
         )
 

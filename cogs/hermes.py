@@ -202,6 +202,10 @@ class SandboxExec(commands.Cog):
         if not self.bot.runtime.is_enabled(message.guild.id):
             return
 
+        if self.bot.maintenance_mode:
+            await message.channel.send(embed=failure("Bot is under maintenance. Please try again later."))
+            return
+
         parsed = self._parse_block(message.content)
         if not parsed:
             return

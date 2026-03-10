@@ -31,6 +31,7 @@ class MyBot(commands.Bot):
         self.db = Database(DB_URL)
         self.runtime: RuntimeManager | None = None
         self.build_version = None
+        self.maintenance_mode = False
 
     async def setup_hook(self):
 
@@ -43,11 +44,14 @@ class MyBot(commands.Bot):
         # Cogs
         await self.load_extension("cogs.hermes")
         await self.load_extension("cogs.logger")
-        await self.load_extension("cogs.status")
+        await self.load_extension("cogs.master")
         await self.load_extension("cogs.health")
 
         await self.tree.sync()
-        await self.tree.sync(guild=discord.Object(id=tortoise_guild_id))
+        try:
+            await self.tree.sync(guild=discord.Object(id=tortoise_guild_id))
+        except discord.errors.Forbidden:
+            print("⚙️ Development mode active")
 
         print("✅ Synced application commands")
 

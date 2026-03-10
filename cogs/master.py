@@ -5,8 +5,9 @@ from discord import app_commands
 
 from utils.checks import tortoise_bot_developer_only
 from constants import tortoise_guild_id
+from utils.embed_handler import success
 
-class StatusCog(commands.Cog):
+class MasterCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -42,13 +43,13 @@ class StatusCog(commands.Cog):
         await self.bot.wait_until_ready()
 
 
-    status_group = app_commands.Group(
+    master_group = app_commands.Group(
         name="status",
         description="Manage bot statuses",
         guild_ids=[tortoise_guild_id]
     )
 
-    @status_group.command(name="add", description="Add a rotating status")
+    @master_group.command(name="add", description="Add a rotating status")
     @app_commands.check(tortoise_bot_developer_only)
     async def add(self, interaction: discord.Interaction, status: str):
         self.statuses.append(status)
@@ -59,7 +60,7 @@ class StatusCog(commands.Cog):
             ephemeral=True,
         )
 
-    @status_group.command(name="remove", description="Remove a rotating status")
+    @master_group.command(name="remove", description="Remove a rotating status")
     @app_commands.check(tortoise_bot_developer_only)
     async def remove(self, interaction: discord.Interaction, status: str):
         if status not in self.statuses:
@@ -77,7 +78,7 @@ class StatusCog(commands.Cog):
             ephemeral=True,
         )
 
-    @status_group.command(name="list", description="List all rotating statuses")
+    @master_group.command(name="list", description="List all rotating statuses")
     @app_commands.check(tortoise_bot_developer_only)
     async def list(self, interaction: discord.Interaction):
         formatted = "\n".join(
@@ -89,6 +90,23 @@ class StatusCog(commands.Cog):
             ephemeral=True,
         )
 
+    @master_group.command(name="enable_maintenance", description="Enable maintenance mode")
+    @app_commands.check(tortoise_bot_developer_only)
+    async def enable_maintenance(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        self.bot.maintenance_mode = True
+        await interaction.followup.send(
+            embed=success("Maintenance mode enabled.")
+        )
+
+    @master_group.command(name="disable_maintenance", description="Disable maintenance mode")
+    @app_commands.check(tortoise_bot_developer_only)
+    async def disable_maintenance(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+        self.bot.maintenance_mode = False
+        await interaction.followup.send(
+            embed=success("Maintenance mode disabled.")
+        )
 
 async def setup(bot: commands.Bot):
-    await bot.add_cog(StatusCog(bot))
+    await bot.add_cog(MasterCog(bot))

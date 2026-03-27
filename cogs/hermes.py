@@ -1,4 +1,5 @@
 import aiohttp
+import asyncio
 import discord
 from decouple import config
 from discord import app_commands
@@ -7,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict
 from utils.embed_handler import code_eval_embed, failure, info, success
 from constants import bot_invite_link
+from utils.logging import log_user_code
 
 EXECUTE_URL = config("EXECUTION_API_URL")
 
@@ -239,6 +241,14 @@ class SandboxExec(commands.Cog):
                 "bot_msg_id": bot_msg.id,
             }
 
+            asyncio.create_task(
+                log_user_code(
+                    self.session,
+                    user_id=message.author.id,
+                    code=code,
+                )
+            )
+
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         if after.author.bot or not after.guild:
@@ -282,6 +292,14 @@ class SandboxExec(commands.Cog):
                 lang,
                 edited=True,
                 target_message=bot_msg,
+            )
+
+            asyncio.create_task(
+                log_user_code(
+                    self.session,
+                    user_id=after.author.id,
+                    code=code,
+                )
             )
 
     @app_commands.command(name="run_help", description="Show how to run code with the execution bot")

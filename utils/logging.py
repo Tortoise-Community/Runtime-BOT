@@ -3,7 +3,7 @@ import json
 import time
 from decouple import config
 
-NEW_RELIC_LOG_URL = "https://log-api.newrelic.com/log/v1"
+NEW_RELIC_LOG_URL = "https://log-api.eu.newrelic.com/log/v1"
 NEW_RELIC_LICENSE_KEY = config("NEW_RELIC_LICENSE_KEY")
 
 
@@ -32,7 +32,7 @@ async def log_user_code(session, user_id: int, code: str):
     }
 
     try:
-        session.post(
+        await session.post(
             NEW_RELIC_LOG_URL,
             data=compressed,
             headers=headers,

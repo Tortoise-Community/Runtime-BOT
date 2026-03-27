@@ -5,7 +5,67 @@ from discord import app_commands
 
 from utils.checks import tortoise_bot_developer_only
 from constants import tortoise_guild_id
-from utils.embed_handler import success
+from utils.embed_handler import success, failure
+
+
+class BroadcastModal(discord.ui.Modal, title="Send Embed"):
+
+    title_input = discord.ui.TextInput(
+        label="Title",
+        required=True,
+        max_length=256
+    )
+
+    description_input = discord.ui.TextInput(
+        label="Description",
+        style=discord.TextStyle.paragraph,
+        required=True
+    )
+
+    footer_input = discord.ui.TextInput(
+        label="Footer (optional)",
+        required=False,
+        max_length=256
+    )
+
+    def __init__(self, bot, guild_id: int):
+        super().__init__()
+        self.bot = bot
+        self.guild_id = guild_id
+
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.defer(ephemeral=True)
+
+        guild = self.bot.get_guild(self.guild_id)
+
+        if not guild:
+            await interaction.followup.send(embed=failure("Guild not found."))
+            return
+
+        embed = discord.Embed(
+            title=self.title_input.value,
+            description=self.description_input.value,
+            color=discord.Color.dark_green()
+        )
+
+        if self.footer_input.value:
+            embed.set_footer(text=self.footer_input.value)
+
+        sent = False
+
+        for channel in guild.text_channels:
+            try:
+                await channel.send(embed=embed)
+                sent = True
+                break
+            except:
+                continue
+
+        if sent:
+            await interaction.followup.send(embed=success("Message sent."), ephemeral=True)
+        else:
+            await interaction.followup.send(embed=failure("Failed to send message."), ephemeral=True)
+
 
 class MasterCog(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -107,6 +167,94 @@ class MasterCog(commands.Cog):
         await interaction.followup.send(
             embed=success("Maintenance mode disabled.")
         )
+
+    @master_group.command(name="list_guilds", description="List all guilds")
+    @app_commands.check(tortoise_bot_developer_only)
+    async def list_guilds(self, interaction: discord.Interaction):
+        guilds = self.bot.guilds
+
+        if not guilds:
+            await interaction.response.send_message("No guilds found.")
+            return
+
+        lines = []
+
+        for guild in guilds:
+            invite_link = "No invite"
+
+            for channel in guild.text_channels:
+                try:
+                    invite = await channel.create_invite(max_age=300, max_uses=1)
+                    invite_link = invite.url
+                    break
+                except:
+                    continue
+
+            lines.append(f"{guild.name} (ID: {guild.id}) → {invite_link}")
+
+        await interaction.response.send_message("\n".join(lines))
+
+
+    @master_group.command(name="broadcast", description="Send embed to a specific guild")
+    @app_commands.check(tortoise_bot_developer_only)
+    @app_commands.describe(guild_id="Target guild ID")
+    async def broadcast(self, interaction: discord.Interaction, guild_id: str):
+        try:
+            guild_id = int(guild_id)
+        except ValueError:
+            await interaction.response.send_message(embed=failure("Invalid guild ID."), ephemeral=True)
+            return
+
+        await interaction.response.send_modal(
+            BroadcastModal(self.bot, guild_id)
+    )
+
+    @master_group.command(name="leave_guild", description="Send goodbye and leave a guild")
+    @app_commands.check(tortoise_bot_developer_only)
+    @app_commands.describe(
+        guild_id="Target guild ID",
+        reason="Reason for leaving"
+    )
+    async def leave_guild(self, interaction: discord.Interaction, guild_id: str, reason: str):
+        await interaction.response.defer(ephemeral=True)
+
+        try:
+            guild_id = int(guild_id)
+        except ValueError:
+            await interaction.followup.send(embed=failure("Invalid guild ID."))
+            return
+
+        guild = self.bot.get_guild(guild_id)
+
+        if not guild:
+            await interaction.followup.send(embed=failure("Guild not found."))
+            return
+
+        embed = discord.Embed(
+            title="Goodbye 👋",
+            description=f"I am leaving this server.\n\n**Reason:** {reason}"
+        )
+
+        sent = False
+
+        for channel in guild.text_channels:
+            try:
+                await channel.send(embed=embed)
+                sent = True
+                break
+            except:
+                continue
+
+        try:
+            await guild.leave()
+
+            if sent:
+                await interaction.followup.send(embed=success("Message sent and left the guild."))
+            else:
+                await interaction.followup.send(embed=failure("Left guild, but failed to send message."))
+        except Exception as e:
+            await interaction.followup.send(embed=failure(f"Failed to leave guild: {e}"))
+
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(MasterCog(bot))

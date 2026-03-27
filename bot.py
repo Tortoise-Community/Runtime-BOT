@@ -6,7 +6,7 @@ from discord.ext import commands
 
 from utils.embed_handler import simple_embed
 from utils.manager import RuntimeManager, Database
-from constants import system_log_channel_id, discord_invite_link, tortoise_guild_id
+from constants import system_log_channel_id, discord_invite_link, tortoise_guild_id, bot_repo_link
 
 TOKEN = config("DISCORD_BOT_TOKEN")
 DB_URL = config("DATABASE_URL")
@@ -74,7 +74,8 @@ async def send_restart_message(client: commands.Bot):
         return
 
     try:
-        embed = simple_embed(message=f"Build version: `{commit_hash}`", title="")
+        commit = f"[{commit_hash}]({bot_repo_link}/commit/{commit_hash})"
+        embed = simple_embed(message=f"Build version: {commit}", title="")
         embed.set_footer(text=f"🔄 Bot Restarted")
         await channel.send(
             embed=embed,

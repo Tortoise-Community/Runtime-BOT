@@ -3,6 +3,7 @@ from discord import Color
 tortoise_guild_id = 577192344529404154
 website_url = "https://www.tortoisecommunity.org/"
 github_repo_link = "https://github.com/Ryuga/Hermes"
+bot_repo_link = "https://github.com/Tortoise-Community/Runtime-BOT"
 discord_invite_link = "https://discord.gg/WeUtJ7hqum"
 bot_invite_link = "https://discord.com/oauth2/authorize?client_id=780132667265122315"
 tortoise_community_avatar_link = "https://avatars.githubusercontent.com/u/54438042"

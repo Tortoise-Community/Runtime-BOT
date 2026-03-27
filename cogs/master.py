@@ -177,6 +177,8 @@ class MasterCog(commands.Cog):
             await interaction.response.send_message("No guilds found.")
             return
 
+        await interaction.response.defer()
+
         lines = []
 
         for guild in guilds:
@@ -192,7 +194,7 @@ class MasterCog(commands.Cog):
 
             lines.append(f"{guild.name} (ID: {guild.id}) → {invite_link}")
 
-        await interaction.response.send_message("\n".join(lines))
+        await interaction.followup.send("\n".join(lines))
 
 
     @master_group.command(name="broadcast", description="Send embed to a specific guild")

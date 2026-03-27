@@ -76,7 +76,7 @@ def failure(message: str) -> Embed:
 def code_eval_embed(language: str, output: str, *, edited: bool = False, exit_code: int = -1, disable_extras=False) -> Embed:
     title = "Execution Result (edited)" if edited else "Execution Result"
     if language == "java":
-        title += "(β)"
+        title += " (β)"
     color = (Color.dark_red() if exit_code != 0 else Color.green() if edited else Color.dark_green())
 
     if not output:

@@ -328,11 +328,14 @@ class SandboxExec(commands.Cog):
             "    }\n"
             "}\n"
             "// PS: Java code requires a public class to compile"
-            "```\n"
+            "```\n\n"
+            "**Video Explanation:**\n"
+        )
+        embed = info(
+            content, interaction.guild.me, "How to Run Code",
             "You can edit your message within 2 minutes to re-run the code automatically."
         )
-
-        embed = info(content, interaction.guild.me, "How to Run Code")
+        embed.set_image(url="https://lairesit.sirv.com/Tortoise/howtoruncode.gif")
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(description="Disable runtime execution in this guild")

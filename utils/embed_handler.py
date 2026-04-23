@@ -29,16 +29,22 @@ def simple_embed(message: str, title: str, color: Union[Color, int] = constants.
     return embed
 
 
-def info(message: str, member: Union[Member, User], title: str = "Info") -> Embed:
+def info(message: str, member: Union[Member, User], title: str = "Info", footer = None) -> Embed:
     """
     Constructs success embed with custom title and description.
     Color depends on passed member top role color.
     :param message: embed description
     :param member: member object to get the color of it's top role from
     :param title: title of embed, defaults to "Info"
+    :param footer: footer of embed, defaults to None
     :return: Embed object
     """
-    return Embed(title=title, description=message, color=get_top_role_color(member, fallback_color=constants.accent_color))
+    embed = Embed(
+        title=title, description=message, color=get_top_role_color(member, fallback_color=constants.accent_color)
+    )
+    if footer:
+        embed.set_footer(text=footer)
+    return embed
 
 
 def success(message: str, member: Union[Member, User] = None) -> Embed:

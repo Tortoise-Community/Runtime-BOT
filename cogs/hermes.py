@@ -58,7 +58,7 @@ class SandboxExec(commands.Cog):
 
 
     def _parse_block(self, content: str):
-        if not content.startswith("/run"):
+        if not content.startswith("/run") or not content.startswith("./run"):
             return None
 
         if "```" not in content:
@@ -75,7 +75,7 @@ class SandboxExec(commands.Cog):
             if not lang or not code.strip():
                 return None
 
-            return lang, code
+            return lang, code, content.startswith("./run")
         except Exception:
             return None
 
@@ -212,7 +212,7 @@ class SandboxExec(commands.Cog):
         if not parsed:
             return
 
-        lang, code = parsed
+        lang, code, minimal = parsed
         lang = LANG_ALIASES.get(lang)
 
         if not lang:
@@ -226,6 +226,11 @@ class SandboxExec(commands.Cog):
                 result = await self._execute(lang, code)
             except Exception:
                 await message.channel.send("Execution request failed.")
+                return
+
+            if minimal:
+                exit_code, output = self._build_output(result)
+                message.channel.send(content=f"```ex\n{output}\n```")
                 return
 
             bot_msg = await self._send_result(
@@ -269,7 +274,7 @@ class SandboxExec(commands.Cog):
         if not parsed:
             return
 
-        lang, code = parsed
+        lang, code, minimal = parsed
         lang = LANG_ALIASES.get(lang)
 
         if not lang:
@@ -280,9 +285,15 @@ class SandboxExec(commands.Cog):
                 result = await self._execute(lang, code)
             except Exception:
                 return
+
             try:
                 bot_msg = await after.channel.fetch_message(meta["bot_msg_id"])
             except Exception:
+                return
+
+            if minimal:
+                exit_code, output = self._build_output(result)
+                bot_msg.edit(content=f"```ex\n{output}\n```")
                 return
 
             await self._send_result(

@@ -58,7 +58,7 @@ class SandboxExec(commands.Cog):
 
 
     def _parse_block(self, content: str):
-        if not content.startswith("/run") or not content.startswith("./run"):
+        if not content.startswith("/run") and not content.startswith("./run"):
             return None
 
         if "```" not in content:
@@ -230,7 +230,7 @@ class SandboxExec(commands.Cog):
 
             if minimal:
                 exit_code, output = self._build_output(result)
-                message.channel.send(content=f"```ex\n{output}\n```")
+                await message.channel.send(content=f"```ex\n{output}\n```")
                 return
 
             bot_msg = await self._send_result(
@@ -293,7 +293,7 @@ class SandboxExec(commands.Cog):
 
             if minimal:
                 exit_code, output = self._build_output(result)
-                bot_msg.edit(content=f"```ex\n{output}\n```")
+                await bot_msg.edit(content=f"```ex\n{output}\n```")
                 return
 
             await self._send_result(

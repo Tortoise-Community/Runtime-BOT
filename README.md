@@ -9,7 +9,7 @@ Developed by **Tortoise Community**.
 
 # Features
 
-* Execute **Python**, **JavaScript**, and **Java** code directly in Discord.
+* Execute **Python**, **JavaScript**, **C++** and **Java** code directly in Discord.
 * Secure execution through the **Hermes sandbox engine**.
 * Automatic re-execution when a message is edited (within 2 minutes).
 * Per-guild runtime enable/disable control.
@@ -21,11 +21,11 @@ Developed by **Tortoise Community**.
 # Supported Languages
 
 | Language   | Aliases            |
-| ---------- | ------------------ |
+|------------|--------------------|
 | Python     | `python`, `py`     |
 | JavaScript | `javascript`, `js` |
 | Java       | `java`             |
-
+| C++        | `cpp,c++`          |
 
 ---
 
@@ -113,6 +113,7 @@ Create a `.env` file.
 DISCORD_BOT_TOKEN=your_bot_token
 DATABASE_URL=postgresql://user:password@localhost/dbname
 EXECUTION_API_URL=https://your-hermes-api/execute
+NEW_RELIC_LICENSE_KEY=your_new_relic_api_key
 BOT_BUILD_VERSION=optional_build_identifier
 HOST=your_health_monitor_host
 PORT=your_health_monitor_port
@@ -176,5 +177,5 @@ This bot requires the **Hermes Code Execution Engine**.
 Repository:
 
 ```
-https://github.com/Ryuga/Hermes
+https://github.com/Ryuga/Hermes-Engine
 ```
